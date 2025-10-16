@@ -1,0 +1,52 @@
+﻿@using DASALUD.ViewModels
+@model LoginViewModel
+
+@{
+    ViewData["Title"] = "Login";
+    Layout = "~/Views/Shared/_AccountLayout.cshtml";
+}
+
+<div class="account-wrap">
+    <div class="account-container">
+        <div class="brand-side">
+            <img src="~/images/Logo.png"
+                 alt="DASALUD Clínica"
+                 class="brand-logo"
+                 asp-append-version="true" />
+
+            <p class="brand-tagline">Todo tu bienestar en un solo lugar.</p>
+            <p class="brand-subtag">Escuchamos. Cuidamos. Sanamos.</p>
+        </div>
+
+        <div class="account-box">
+            <h2>Iniciar sesión</h2>
+            <p class="account-subtitle">
+                Ingrese su correo electrónico para iniciar sesión y acceder a todos los servicios de DASALUD.
+            </p>
+
+            <form asp-action="Login" method="post">
+                <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+
+                <div class="mb-3">
+                    <label asp-for="Username" class="form-label"></label>
+                    <input asp-for="Username" class="form-control" />
+                    <span asp-validation-for="Username" class="text-danger"></span>
+                </div>
+
+                <div class="mb-3">
+                    <label asp-for="Password" class="form-label"></label>
+                    <input asp-for="Password" class="form-control" type="password" />
+                    <span asp-validation-for="Password" class="text-danger"></span>
+                </div>
+
+                <input type="submit" value="Iniciar sesión" class="btn btn-primary-custom w-100" />
+            </form>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial.cshtml");
+    }
+}
