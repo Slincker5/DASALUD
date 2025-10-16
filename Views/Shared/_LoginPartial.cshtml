@@ -1,0 +1,19 @@
+﻿@using System.Security.Claims
+
+<ul class="navbar-nav ms-auto">
+    @if (User.Identity?.IsAuthenticated == true)
+    {
+        <li class="nav-item">
+            <span class="nav-link text-dark">Hola, @User.Identity.Name</span>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link text-dark" asp-controller="Account" asp-action="Logout">Cerrar Sesión</a>
+        </li>
+    }
+    else
+    {
+        <li class="nav-item">
+            <a class="nav-link text-dark" asp-controller="Account" asp-action="Login">Iniciar Sesión</a>
+        </li>
+    }
+</ul>
