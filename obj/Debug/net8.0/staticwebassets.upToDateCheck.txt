@@ -1,7 +1,9 @@
 wwwroot\css\account.css
+wwwroot\css\dashboard.css
 wwwroot\css\site.css
 wwwroot\favicon.ico
-wwwroot\images\Logo.png
+wwwroot\images\Logo Navbar.svg
+wwwroot\images\Logo.svg
 wwwroot\js\site.js
 wwwroot\lib\bootstrap\dist\css\bootstrap-grid.css
 wwwroot\lib\bootstrap\dist\css\bootstrap-grid.css.map
