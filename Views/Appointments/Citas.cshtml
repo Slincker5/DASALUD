@@ -1,0 +1,356 @@
+﻿@model DASALUD.ViewModels.CitasViewModel
+@{
+    ViewData["Title"] = "Citas";
+    Layout = null;
+}
+
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>@ViewData["Title"] - DASALUD</title>
+    <link rel="stylesheet" href="~/css/dashboard.css" asp-append-version="true" />
+    <link rel="stylesheet" href="~/css/citas.css" asp-append-version="true" />
+
+</head>
+<body>
+    <div class="dashboard-container">
+        <header class="dashboard-header">
+            <div class="dashboard-logo">
+                <img src="~/images/Logo Navbar.svg"
+                     alt="DASALUD Clínica"
+                     class="brand-logo"
+                     asp-append-version="true" />
+            </div>
+
+            <div class="user-info">
+                @{
+                    var nombres = User.FindFirst(System.Security.Claims.ClaimTypes.GivenName)?.Value ?? "";
+                    var apellidos = User.FindFirst(System.Security.Claims.ClaimTypes.Surname)?.Value ?? "";
+                    var email = User.FindFirst(System.Security.Claims.ClaimTypes.Email)?.Value ?? "";
+                    var iniciales = "";
+                    if (!string.IsNullOrEmpty(nombres)) iniciales += nombres[0];
+                    if (!string.IsNullOrEmpty(apellidos)) iniciales += apellidos[0];
+                }
+
+                <div class="user-profile-trigger" onclick="toggleUserDropdown()">
+                    <span class="user-name">@nombres @apellidos</span>
+                    <div class="user-avatar">@iniciales</div>
+                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <polyline points="6 9 12 15 18 9"></polyline>
+                    </svg>
+                </div>
+
+                <div class="user-dropdown" id="userDropdown">
+                    <div class="dropdown-header">
+                        <div class="dropdown-avatar">@iniciales</div>
+                        <div class="dropdown-user-info">
+                            <h4>@nombres @apellidos</h4>
+                            <p>@email</p>
+                        </div>
+                    </div>
+                    <div class="dropdown-menu">
+                        <form asp-controller="Account" asp-action="Logout" method="post" style="margin: 0;">
+                            <button type="submit" class="dropdown-item">
+                                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path>
+                                    <polyline points="16 17 21 12 16 7"></polyline>
+                                    <line x1="21" y1="12" x2="9" y2="12"></line>
+                                </svg>
+                                <span>Cerrar Sesión</span>
+                            </button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </header>
+
+        <div class="dashboard-main-layout">
+            <aside class="dashboard-sidebar">
+                <div class="sidebar-section">
+                    <div class="sidebar-title">Administración</div>
+                    <ul class="sidebar-menu">
+                        <li><a href="@Url.Action("Index", "Home")">Reportes</a></li>
+                        <li><a href="@Url.Action("Index", "Appointments")" class="active">Citas</a></li>
+                        <li><a href="#" onclick="alert('Próximamente')">Empleados</a></li>
+                        <li><a href="#" onclick="alert('Próximamente')">Pacientes</a></li>
+                    </ul>
+                </div>
+            </aside>
+
+            <main class="dashboard-content">
+                <div class="header-block">
+                    <div class="page-header">
+                        <div>
+                            <h2 class="page-title">Citas Médicas Registradas</h2>
+                            <p class="page-subtitle">Se muestran @Model.PageSize registros por página. Navegue entre páginas para consultar más información.</p>
+                        </div>
+                        <a class="btn-primary-sm" href="@Url.Action("Create", "Appointments")">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <path d="M12 5v14M5 12h14" />
+                            </svg>
+                            Añadir Cita
+                        </a>
+                    </div>
+                </div>
+
+                <div class="table-card">
+                    <div class="table-wrapper">
+                        <table class="appointments">
+                            <thead>
+                                <tr>
+                                    <th style="width:120px;">ID Consulta</th>
+                                    <th>Atendido por</th>
+                                    <th>Paciente</th>
+                                    <th>Fecha</th>
+                                    <th>Costo</th>
+                                    <th>Estado</th>
+                                    <th class="col-actions">Acciones</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @if (Model.Citas != null && Model.Citas.Any())
+                                {
+                                    foreach (var c in Model.Citas)
+                                    {
+                                        var estadoClass = c.Estado?.ToLowerInvariant() switch
+                                        {
+                                            "finalizada" => "badge-finalizada",
+                                            "pendiente" => "badge-pendiente",
+                                            "reprogramada" => "badge-reprogramada",
+                                            _ => "badge-finalizada"
+                                        };
+                                        <tr id="cita-row-@c.Id">
+                                            <td>@c.IdConsulta</td>
+                                            <td>@c.AtendidoPor</td>
+                                            <td>@c.Paciente</td>
+                                            <td>@c.Fecha.ToString("dd/MM/yyyy")</td>
+                                            <td class="money">@string.Format(System.Globalization.CultureInfo.GetCultureInfo("en-US"), "{0:C}", c.Costo)</td>
+                                            <td>
+                                                <span class="badge @estadoClass">
+                                                    @c.Estado
+                                                </span>
+                                            </td>
+                                            <td class="col-actions">
+                                                <div class="actions">
+                                                    <a class="icon-btn icon-blue" title="Editar" href="@Url.Action("Edit", "Appointments", new { id = c.Id })" aria-label="Editar">
+                                                        <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                                            <path d="M12 20h9" />
+                                                            <path d="M16.5 3.5a2.121 2.121 0 1 1 3 3L7 19l-4 1 1-4 12.5-12.5z" />
+                                                        </svg>
+                                                    </a>
+                                                    <form asp-action="Delete" asp-controller="Appointments" asp-route-id="@c.Id" method="post" class="delete-form" data-cita-id="@c.IdConsulta" data-paciente="@c.Paciente" data-fecha="@c.Fecha.ToString("dd/MM/yyyy")">
+                                                        @Html.AntiForgeryToken()
+                                                        <button type="button" class="icon-btn icon-red" title="Eliminar" aria-label="Eliminar" onclick="showDeleteModal(this)">
+                                                            <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                                                <polyline points="3 6 5 6 21 6" />
+                                                                <path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6" />
+                                                                <path d="M10 11v6M14 11v6" />
+                                                                <path d="M9 6V4a2 2 0 0 1 2-2h2a2 2 0 0 1 2 2v2" />
+                                                            </svg>
+                                                        </button>
+                                                    </form>
+                                                </div>
+                                            </td>
+                                        </tr>
+                                    }
+                                }
+                                else
+                                {
+                                    <tr>
+                                        <td colspan="7" style="padding:24px; text-align:center; color:#6E7C87;">
+                                            No hay registros para mostrar.
+                                        </td>
+                                    </tr>
+                                }
+                            </tbody>
+                        </table>
+                    </div>
+
+                    @{
+                        var hasPrev = Model.Page > 1;
+                        var hasNext = Model.Page < Model.TotalPages;
+                        string pageUrl(int p) => Url.Action("Index", "Appointments", new { page = p, pageSize = Model.PageSize, q = Model.Query });
+                    }
+                    <div class="pagination-bar">
+                        <span class="label">Atrás</span>
+                        <div class="pager">
+                            <a class="page @(hasPrev ? "" : "disabled")" href="@(hasPrev? pageUrl(Model.Page - 1) : "#")" aria-label="Página anterior">«</a>
+
+                            @for (int p = 1; p <= Model.TotalPages; p++)
+                            {
+                                <a class="page @(p == Model.Page ? "active" : "")" href="@pageUrl(p)">@p</a>
+                            }
+
+                            <a class="page @(hasNext ? "" : "disabled")" href="@(hasNext? pageUrl(Model.Page + 1) : "#")" aria-label="Página siguiente">»</a>
+                            <span class="label">Siguiente</span>
+                        </div>
+                    </div>
+                </div>
+            </main>
+        </div>
+    </div>
+
+    <!-- Modal de Confirmación de Eliminación -->
+    <div class="modal-overlay" id="deleteModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>
+                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <circle cx="12" cy="12" r="10"></circle>
+                        <line x1="12" y1="8" x2="12" y2="12"></line>
+                        <line x1="12" y1="16" x2="12.01" y2="16"></line>
+                    </svg>
+                    ¿Eliminar cita médica?
+                </h3>
+            </div>
+            <div class="modal-body">
+                <p>Esta acción eliminará permanentemente la cita seleccionada del sistema.</p>
+                <div class="modal-info">
+                    <div class="modal-info-row">
+                        <span class="modal-info-label">ID Consulta:</span>
+                        <span class="modal-info-value" id="modal-cita-id"></span>
+                    </div>
+                    <div class="modal-info-row">
+                        <span class="modal-info-label">Paciente:</span>
+                        <span class="modal-info-value" id="modal-paciente"></span>
+                    </div>
+                    <div class="modal-info-row">
+                        <span class="modal-info-label">Fecha:</span>
+                        <span class="modal-info-value" id="modal-fecha"></span>
+                    </div>
+                </div>
+                <p style="margin-top: 16px; font-size: 13px; color: #C0392B;">
+                    <strong>Advertencia:</strong> Esta acción no se puede deshacer.
+                </p>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="modal-btn modal-btn-cancel" onclick="closeDeleteModal()">Cancelar</button>
+                <button type="button" class="modal-btn modal-btn-delete" onclick="confirmDelete()">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <polyline points="3 6 5 6 21 6" />
+                        <path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6" />
+                    </svg>
+                    Eliminar
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Contenedor de Notificaciones Toast -->
+    <div class="toast-container" id="toastContainer"></div>
+
+    <script>
+        // Variables globales
+        let currentDeleteForm = null;
+
+        // Toggle User Dropdown
+        function toggleUserDropdown() {
+            const dropdown = document.getElementById('userDropdown');
+            dropdown.classList.toggle('show');
+        }
+
+        // Cerrar dropdown al hacer clic fuera
+        document.addEventListener('click', function (event) {
+            const dropdown = document.getElementById('userDropdown');
+            const trigger = document.querySelector('.user-profile-trigger');
+            if (trigger && !trigger.contains(event.target) && !dropdown.contains(event.target)) {
+                dropdown.classList.remove('show');
+            }
+        });
+
+        // Mostrar modal de confirmación de eliminación
+        function showDeleteModal(button) {
+            const form = button.closest('form');
+            const citaId = form.dataset.citaId;
+            const paciente = form.dataset.paciente;
+            const fecha = form.dataset.fecha;
+
+            // Guardar referencia al formulario
+            currentDeleteForm = form;
+
+            // Actualizar contenido del modal
+            document.getElementById('modal-cita-id').textContent = citaId;
+            document.getElementById('modal-paciente').textContent = paciente;
+            document.getElementById('modal-fecha').textContent = fecha;
+
+            // Mostrar modal
+            document.getElementById('deleteModal').classList.add('show');
+        }
+
+        // Cerrar modal
+        function closeDeleteModal() {
+            document.getElementById('deleteModal').classList.remove('show');
+            currentDeleteForm = null;
+        }
+
+        // Confirmar eliminación
+        function confirmDelete() {
+            if (currentDeleteForm) {
+                currentDeleteForm.submit();
+            }
+            closeDeleteModal();
+        }
+
+        // Cerrar modal al hacer clic fuera
+        document.getElementById('deleteModal').addEventListener('click', function(e) {
+            if (e.target === this) {
+                closeDeleteModal();
+            }
+        });
+
+        // Función para mostrar notificaciones toast
+        function showToast(message, type = 'success') {
+            const container = document.getElementById('toastContainer');
+            
+            const toast = document.createElement('div');
+            toast.className = `toast toast-${type}`;
+            
+            const icon = type === 'success' 
+                ? `<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                     <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path>
+                     <polyline points="22 4 12 14.01 9 11.01"></polyline>
+                   </svg>`
+                : `<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                     <circle cx="12" cy="12" r="10"></circle>
+                     <line x1="12" y1="8" x2="12" y2="12"></line>
+                     <line x1="12" y1="16" x2="12.01" y2="16"></line>
+                   </svg>`;
+            
+            toast.innerHTML = `
+                ${icon}
+                <span>${message}</span>
+                <button type="button" class="toast-close" onclick="this.parentElement.remove()">×</button>
+            `;
+            
+            container.appendChild(toast);
+            
+            // Auto-cerrar después de 5 segundos
+            setTimeout(() => {
+                toast.style.animation = 'slideOutRight 0.4s ease forwards';
+                setTimeout(() => toast.remove(), 400);
+            }, 5000);
+        }
+
+        // Mostrar notificaciones al cargar la página
+        document.addEventListener('DOMContentLoaded', function() {
+            @if (TempData["Success"] != null)
+            {
+                <text>
+                showToast('@Html.Raw(TempData["Success"])', 'success');
+                </text>
+            }
+            @if (TempData["Error"] != null)
+            {
+                <text>
+                showToast('@Html.Raw(TempData["Error"])', 'error');
+                </text>
+            }
+        });
+    </script>
+
+    <!-- SweetAlert2 -->
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@10"></script>
+</body>
+</html>

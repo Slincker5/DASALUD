@@ -1,0 +1,224 @@
+@model DASALUD.ViewModels.CreateCitaViewModel
+@{
+    ViewData["Title"] = "Añadir Cita";
+    Layout = null;
+}
+
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>@ViewData["Title"] - DASALUD</title>
+    <link rel="stylesheet" href="~/css/dashboard.css" asp-append-version="true" />
+    <link rel="stylesheet" href="~/css/citas.css" asp-append-version="true" />
+</head>
+<body>
+    <div class="dashboard-container">
+        <header class="dashboard-header">
+            <div class="dashboard-logo">
+                <img src="~/images/Logo Navbar.svg"
+                     alt="DASALUD Clínica"
+                     class="brand-logo"
+                     asp-append-version="true" />
+            </div>
+
+            <div class="user-info">
+                @{
+                    var nombres = User.FindFirst(System.Security.Claims.ClaimTypes.GivenName)?.Value ?? "";
+                    var apellidos = User.FindFirst(System.Security.Claims.ClaimTypes.Surname)?.Value ?? "";
+                    var email = User.FindFirst(System.Security.Claims.ClaimTypes.Email)?.Value ?? "";
+                    var iniciales = "";
+                    if (!string.IsNullOrEmpty(nombres)) iniciales += nombres[0];
+                    if (!string.IsNullOrEmpty(apellidos)) iniciales += apellidos[0];
+                }
+
+                <div class="user-profile-trigger" onclick="toggleUserDropdown()">
+                    <span class="user-name">@nombres @apellidos</span>
+                    <div class="user-avatar">@iniciales</div>
+                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <polyline points="6 9 12 15 18 9"></polyline>
+                    </svg>
+                </div>
+
+                <div class="user-dropdown" id="userDropdown">
+                    <div class="dropdown-header">
+                        <div class="dropdown-avatar">@iniciales</div>
+                        <div class="dropdown-user-info">
+                            <h4>@nombres @apellidos</h4>
+                            <p>@email</p>
+                        </div>
+                    </div>
+                    <div class="dropdown-menu">
+                        <form asp-controller="Account" asp-action="Logout" method="post" style="margin: 0;">
+                            <button type="submit" class="dropdown-item">
+                                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path>
+                                    <polyline points="16 17 21 12 16 7"></polyline>
+                                    <line x1="21" y1="12" x2="9" y2="12"></line>
+                                </svg>
+                                <span>Cerrar Sesión</span>
+                            </button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </header>
+
+        <div class="dashboard-main-layout">
+            <!-- Sidebar -->
+            <aside class="dashboard-sidebar">
+                <div class="sidebar-section">
+                    <div class="sidebar-title">Administración</div>
+                    <ul class="sidebar-menu">
+                        <li><a href="@Url.Action("Index", "Home")">Reportes</a></li>
+                        <li><a href="@Url.Action("Index", "Appointments")" class="active">Citas</a></li>
+                        <li><a href="#" onclick="alert('Próximamente')">Empleados</a></li>
+                        <li><a href="#" onclick="alert('Próximamente')">Pacientes</a></li>
+                    </ul>
+                </div>
+            </aside>
+
+            <!-- Contenido Principal -->
+            <main class="citas-dashboard-content">
+                <div class="header-block">
+                    <div class="page-header">
+                        <div>
+                            <h2 class="page-title">Gestión de Citas Médicas</h2>
+                            <p class="page-subtitle">Administre, registre y actualice la información de las citas médicas de los pacientes.</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Formulario de Creación -->
+                <div class="citas-form-card">
+                    <form asp-action="Create" method="post">
+                        <div class="form-grid">
+                            <!-- Selección de Paciente -->
+                            <div class="form-group">
+                                <label asp-for="IdPaciente" class="form-label">Asignado a</label>
+                                <select asp-for="IdPaciente" class="form-select">
+                                    <option value="">Selecciona a un paciente</option>
+                                    @if (Model.Pacientes != null)
+                                    {
+                                        foreach (var paciente in Model.Pacientes)
+                                        {
+                                            <option value="@paciente.IdPaciente">@paciente.NombreCompleto</option>
+                                        }
+                                    }
+                                </select>
+                                <span asp-validation-for="IdPaciente" class="text-danger"></span>
+                            </div>
+
+                            <!-- Selección de Médico -->
+                            <div class="form-group">
+                                <label asp-for="IdEmpleado" class="form-label">Médico encargado</label>
+                                <select asp-for="IdEmpleado" class="form-select">
+                                    <option value="">Selecciona a un médico</option>
+                                    @if (Model.Empleados != null)
+                                    {
+                                        foreach (var empleado in Model.Empleados)
+                                        {
+                                            <option value="@empleado.IdEmpleado">@empleado.NombreCompleto - @empleado.Especialidad</option>
+                                        }
+                                    }
+                                </select>
+                                <span asp-validation-for="IdEmpleado" class="text-danger"></span>
+                            </div>
+
+                            <!-- Costo de la Cita -->
+                            <div class="form-group">
+                                <label asp-for="Costo" class="form-label">Costo de Cita</label>
+                                <input asp-for="Costo" type="number" step="0.01" class="form-input" placeholder="$29.00" />
+                                <span asp-validation-for="Costo" class="text-danger"></span>
+                            </div>
+
+                            <!-- Fecha de la Cita -->
+                            <div class="form-group">
+                                <label asp-for="FechaCita" class="form-label">Fecha de la cita</label>
+                                <input asp-for="FechaCita" type="date" class="form-input" />
+                                <span asp-validation-for="FechaCita" class="text-danger"></span>
+                            </div>
+
+                            <!-- Estado (Readonly) -->
+                            <div class="form-group form-group-full">
+                                <label class="form-label">Estado</label>
+                                <input type="text" value="Pendiente" class="form-input" readonly disabled />
+                                <small class="form-help">El estado por defecto es "Pendiente"</small>
+                            </div>
+                        </div>
+
+                        <!-- Botones -->
+                        <div class="form-actions">
+                            <a href="@Url.Action("Index", "Appointments")" class="btn-secondary">Cancelar</a>
+                            <button type="submit" class="btn-primary">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"></path>
+                                    <polyline points="17 21 17 13 7 13 7 21"></polyline>
+                                    <polyline points="7 3 7 8 15 8"></polyline>
+                                </svg>
+                                Crear cita
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </main>
+        </div>
+    </div>
+
+    <!-- Contenedor de Notificaciones Toast -->
+    <div class="toast-container" id="toastContainer"></div>
+
+    <script>
+        function toggleUserDropdown() {
+            const dropdown = document.getElementById('userDropdown');
+            dropdown.classList.toggle('show');
+        }
+
+        document.addEventListener('click', function (event) {
+            const dropdown = document.getElementById('userDropdown');
+            const trigger = document.querySelector('.user-profile-trigger');
+            if (trigger && !trigger.contains(event.target) && !dropdown.contains(event.target)) {
+                dropdown.classList.remove('show');
+            }
+        });
+
+        function showToast(message, type = 'success') {
+            const container = document.getElementById('toastContainer');
+            const toast = document.createElement('div');
+            toast.className = `toast toast-${type}`;
+            const icon = type === 'success'
+                ? `<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                     <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path>
+                     <polyline points="22 4 12 14.01 9 11.01"></polyline>
+                   </svg>`
+                : `<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                     <circle cx="12" cy="12" r="10"></circle>
+                     <line x1="12" y1="8" x2="12" y2="12"></line>
+                     <line x1="12" y1="16" x2="12.01" y2="16"></line>
+                   </svg>`;
+            toast.innerHTML = `${icon}<span>${message}</span><button type="button" class="toast-close" onclick="this.parentElement.remove()">×</button>`;
+            container.appendChild(toast);
+            setTimeout(() => {
+                toast.style.animation = 'slideOutRight 0.4s ease forwards';
+                setTimeout(() => toast.remove(), 400);
+            }, 5000);
+        }
+
+        document.addEventListener('DOMContentLoaded', function () {
+            @if (TempData["Success"] != null)
+            {
+                <text>showToast('@Html.Raw(TempData["Success"])', 'success');</text>
+            }
+            @if (TempData["Error"] != null)
+            {
+                <text>showToast('@Html.Raw(TempData["Error"])', 'error');</text>
+            }
+        });
+    </script>
+
+    @section Scripts {
+        @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+    }
+</body>
+</html>

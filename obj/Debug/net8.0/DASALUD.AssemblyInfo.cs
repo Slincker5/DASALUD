@@ -14,7 +14,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("DASALUD")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+86eced5c4f6a74fec09b818d58b100ed41e08418")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+9f66de7608e479b66f4e3cbe4d497e0bf70ac4db")]
 [assembly: System.Reflection.AssemblyProductAttribute("DASALUD")]
 [assembly: System.Reflection.AssemblyTitleAttribute("DASALUD")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]
