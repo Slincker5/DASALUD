@@ -363,15 +363,17 @@ namespace DASALUD.Controllers
             return View(cita);
         }
 
+        // POST: Appointments/Delete/5
         [HttpPost]
+        [ActionName("Delete")]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Delete(int id)
+        public async Task<IActionResult> DeleteConfirmed(int id)
         {
             try
             {
                 var cita = await _context.Citas
                     .Include(c => c.Paciente.Persona)
-                    .FirstOrDefaultAsync(c => c.IdCita == id);
+                    .FirstOrDefaultAsync(c => c.IdCita == id && c.Activo);
 
                 if (cita == null)
                 {

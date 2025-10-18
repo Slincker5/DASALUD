@@ -476,4 +476,201 @@ table.appointments {
     }
 }
 
+/* Estilos para el formulario de eliminación */
+.delete-form {
+    display: inline-block;
+    margin: 0;
+    padding: 0;
+}
+
+/* Notificaciones Toast (esquina inferior derecha) */
+.toast-container {
+    position: fixed;
+    bottom: 20px;
+    right: 20px;
+    z-index: 9999;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    max-width: 400px;
+}
+
+.toast {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 16px 20px;
+    border-radius: 12px;
+    font-size: 14px;
+    font-weight: 500;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+    animation: slideInRight 0.4s ease forwards;
+    min-width: 300px;
+    backdrop-filter: blur(10px);
+}
+
+.toast svg {
+    flex-shrink: 0;
+}
+
+.toast-success {
+    background-color: rgba(230, 246, 237, 0.95);
+    color: #2C7A4B;
+    border-left: 4px solid #2C7A4B;
+}
+
+.toast-error {
+    background-color: rgba(255, 234, 234, 0.95);
+    color: #C0392B;
+    border-left: 4px solid #C0392B;
+}
+
+.toast-close {
+    margin-left: auto;
+    background: none;
+    border: none;
+    font-size: 24px;
+    line-height: 1;
+    cursor: pointer;
+    color: inherit;
+    opacity: 0.6;
+    transition: opacity 0.3s ease;
+    padding: 0;
+    width: 24px;
+    height: 24px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.toast-close:hover {
+    opacity: 1;
+}
+
+/* Modal de Confirmación */
+.modal-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: rgba(0, 0, 0, 0.5);
+    display: none;
+    align-items: center;
+    justify-content: center;
+    z-index: 10000;
+    animation: fadeIn 0.3s ease;
+}
+
+.modal-overlay.show {
+    display: flex !important;
+}
+
+.modal-content {
+    background: white;
+    border-radius: 16px;
+    padding: 0;
+    max-width: 480px;
+    width: 90%;
+    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.2);
+    animation: scaleIn 0.3s ease;
+}
+
+.modal-header {
+    padding: 24px 24px 16px 24px;
+    border-bottom: 1px solid #F0F4F8;
+}
+
+.modal-header h3 {
+    margin: 0;
+    font-size: 20px;
+    font-weight: 600;
+    color: #24425A;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.modal-header svg {
+    color: #C0392B;
+}
+
+.modal-body {
+    padding: 24px;
+}
+
+.modal-body p {
+    margin: 0 0 12px 0;
+    color: #6E7C87;
+    font-size: 15px;
+    line-height: 1.6;
+}
+
+.modal-info {
+    background: #F7FAFC;
+    padding: 16px;
+    border-radius: 8px;
+    margin-top: 16px;
+}
+
+.modal-info-row {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 8px;
+    font-size: 14px;
+}
+
+.modal-info-row:last-child {
+    margin-bottom: 0;
+}
+
+.modal-info-label {
+    color: #7E8A97;
+    font-weight: 500;
+}
+
+.modal-info-value {
+    color: #24425A;
+    font-weight: 600;
+}
+
+.modal-footer {
+    padding: 16px 24px;
+    border-top: 1px solid #F0F4F8;
+    display: flex;
+    gap: 12px;
+    justify-content: flex-end;
+}
+
+.modal-btn {
+    padding: 10px 20px;
+    border-radius: 8px;
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    border: none;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.modal-btn-cancel {
+    background: #F7FAFC;
+    color: #6E7C87;
+}
+
+.modal-btn-cancel:hover {
+    background: #E6EEF5;
+}
+
+.modal-btn-delete {
+    background: #C0392B;
+    color: white;
+}
+
+.modal-btn-delete:hover {
+    background: #A02F23;
+}
+
 

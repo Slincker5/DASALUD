@@ -1,5 +1,4 @@
 wwwroot\css\account.css
-wwwroot\css\citas.css
 wwwroot\css\dashboard.css
 wwwroot\css\site.css
 wwwroot\favicon.ico
@@ -63,3 +62,4 @@ wwwroot\lib\jquery\dist\jquery.js
 wwwroot\lib\jquery\dist\jquery.min.js
 wwwroot\lib\jquery\dist\jquery.min.map
 wwwroot\lib\jquery\LICENSE.txt
+wwwroot\css\citas.css
